@@ -5,44 +5,12 @@ import Cookies from 'js-cookie';
 import setAuthorizationToken from '../utils/setAuthorizationToken';
 
 import {
-  SET_HELLO,
-  SET_TODOS,
-  SET_NEWTODOS,
   SET_USER,
   SET_POSTS_PREV,
   SET_POST_VIEW
 } from './types';
 
-import { todoApi, authApi, postsApi } from '../api/';
-
-export const setHello = payload => ({
-  type: SET_HELLO,
-  payload,
-});
-
-const setTodos = payload => ({
-  type: SET_TODOS,
-  payload,
-});
-
-export const fetchTodos = () => {
-  return async dispatch => {
-    const res = await todoApi.getTodos();
-    dispatch(setTodos(res.data));
-  };
-};
-
-const setNewTodos = payload => ({
-  type: SET_NEWTODOS,
-  payload,
-});
-
-export const fetchNewTodos = () => {
-  return async dispatch => {
-    const res = await todoApi.getNewTodos();
-    dispatch(setNewTodos(res.data));
-  };
-};
+import { authApi, postsApi } from '../api/';
 
 export const setUser = payload => ({
   type: SET_USER,
@@ -55,9 +23,6 @@ export const fetchLogin = (email, password, nickname) => {
 
     const res = await authApi.login(email, password, nickname);
 
-    //console.log('AUTH', res);
-
-    //console.log('DATA jwt ===>', jwtData);
 
     if(isJwtValid(res.data.token)){
       const jwtData = jwtDecode(res.data.token) || {};

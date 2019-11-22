@@ -19,11 +19,11 @@ const Home = ({ postsPrev, fetchPostsPrev }) => {
       <br />
       <Link to="/about">О сайте</Link>
       <br />
-      <Link to="/login">Форма входа</Link>
-      <br />
-      <Link to="/todo">Страница с задачами</Link>
-      <br />
       <Link to="/post/list">Список постов</Link>
+      <br />
+      <Link to="/login">LOgin</Link>
+      <br />
+      <br />
       <div>
         <div>
           <PostPrev postsPrev={postsPrev} />
@@ -39,4 +39,14 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default { component: connect(mapStateToProps, { fetchPostsPrev })(Home), title: 'Главная страница' };
+const ld = (store, param) => {
+  return store.dispatch(fetchPostsPrev(param));
+};
+
+export default {
+  component: connect(mapStateToProps, { fetchPostsPrev })(Home),
+  title: 'Главная страница',
+  loadData: [
+    ld,
+  ],
+};
