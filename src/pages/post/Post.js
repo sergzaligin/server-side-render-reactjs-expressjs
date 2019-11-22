@@ -21,4 +21,13 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default { component: connect(mapStateToProps, { fetchPostView })(Post), title: 'Просмотр поста' };
+const loadData = (store, param) => {
+  return store.dispatch(fetchPostView(param));
+};
+
+export default {
+  component: connect(mapStateToProps,
+    { fetchPostView })(Post),
+    title: 'Просмотр поста',
+    loadData,
+  };

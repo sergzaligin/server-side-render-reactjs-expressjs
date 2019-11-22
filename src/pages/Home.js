@@ -39,14 +39,12 @@ const mapStateToProps = (state) => {
   };
 };
 
-const ld = (store, param) => {
+const loadData = (store, param) => {
   return store.dispatch(fetchPostsPrev(param));
 };
 
 export default {
   component: connect(mapStateToProps, { fetchPostsPrev })(Home),
   title: 'Главная страница',
-  loadData: [
-    ld,
-  ],
+  loadData,
 };
