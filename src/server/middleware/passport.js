@@ -1,21 +1,22 @@
-import JwtStrategy from 'passport-jwt'.Strategy;
-import ExtractJwt from 'passport-jwt'.ExtractJwt;
-
+import { ExtractJwt, Strategy } from 'passport-jwt';
+import dotenv from 'dotenv';
 import User from '../models/User.js';
-
+dotenv.config({
+  path: './src/server/.env',
+});
 /**
  * Parse headers
  * @type {Object}
  */
 const options = {
 	jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-	secretOrKey: 'api359t'
+	secretOrKey: process.env.JWT
 };
 
-export default = passport => {
+export default (passport) => {
 
 	passport.use(
-		new JwtStrategy(options, async (payload, done) => {
+		new Strategy(options, async (payload, done) => {
 
 			try {
 				const user = await User.findById(payload.userId).select('email id');

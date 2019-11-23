@@ -4,94 +4,104 @@ import jwt from 'jsonwebtoken';
 
 import errorHandler from '../utils/errorHandler';
 
-export const registration = async (req, res) => {
 
-	try {
+class Auth {
 
-		const candidateEmail = await User.findOne({
-			email: req.body.email
-		});
+  async registration(req, res){
 
-		const candidateNickname = await User.findOne({
-			nickname: req.body.nickname
-		});
+    try {
 
-		if (candidateEmail || candidateNickname) {
-			res.status(409).json({
-				msg: `Пользователь ${candidateNickname ? 'c никнеймом ' + candidateNickname.nickname : 'c почтой ' + candidateEmail.email} уже зарегистрирован.`,
-				status: 409,
-				isEmailFailure:  candidateNickname ? false : true
-			});
-		} else {
+      const candidateEmail = await User.findOne({
+        email: req.body.email
+      });
 
-			const salt = bcryptjs.genSaltSync(10);
-			const password = req.body.password;
+      const candidateNickname = await User.findOne({
+        nickname: req.body.nickname
+      });
 
-			const user = new User({
-				nickname: req.body.nickname,
-				email: req.body.email,
-				password: bcryptjs.hashSync(password, salt)
-			});
+      if (candidateEmail || candidateNickname) {
+        res.status(409).json({
+          msg: `Пользователь ${candidateNickname ? 'c никнеймом ' + candidateNickname.nickname : 'c почтой ' + candidateEmail.email} уже зарегистрирован.`,
+          status: 409,
+          isEmailFailure:  candidateNickname ? false : true
+        });
+      } else {
 
-			await user.save();
+        const salt = bcryptjs.genSaltSync(10);
+        const password = req.body.password;
 
-			res.status(201).json({
-				msg: 'Вы успешно зарегистрировались.',
-				status: 201
-			});
-		}
+        const user = new User({
+          nickname: req.body.nickname,
+          email: req.body.email,
+          password: bcryptjs.hashSync(password, salt)
+        });
 
-	} catch(e) {
-		errorHandler(res, e);
-	}
+        await user.save();
 
-};
+        res.status(201).json({
+          msg: 'Вы успешно зарегистрировались.',
+          status: 201
+        });
+      }
 
-export const login = async (req, res) => {
-	try {
+    } catch(e) {
+      errorHandler(res, e);
+    }
 
-		const candidate = await User.findOne({
-			email: req.body.email
-		});
+  }
 
-		if (candidate) {
 
-			const passwordResult = bcryptjs.compareSync(req.body.password, candidate.password);
+  async login (req, res){
+    try {
 
-			if (passwordResult) {
-				/**
-				 * Set params token
-				 * first conf object
-				 * second sicret key
-				 * thert time a live 1h 60sec * 60min
-				 */
-				const token = jwt.sign({
-					userId: candidate._id,
-					nickname: candidate.nickname,
-					email: candidate.email,
-					role: candidate.role,
-					avatar: candidate.avatar,
-					signature: candidate.signature
-				}, process.env.JWT, {expiresIn: 60 * 60});
+      const candidate = await User.findOne({
+        email: req.body.email
+      });
 
-				res.status(200).json({
-					token: `Bearer ${token}`,
-					status: 200
-				});
-			} else {
-				res.status(401).json({
-					msg: 'Почта или пароль не совпадают.',
-					status: 401
-				});
-			}
-		} else {
-			res.status(404).json({
-				msg: 'Вы не зарегистрированы.',
-				status: 404
-			});
-		}
+      if (candidate) {
 
-	} catch(e) {
-		errorHandler(res, e);
-	}
-};
+        const passwordResult = bcryptjs.compareSync(req.body.password, candidate.password);
+
+        if (passwordResult) {
+          /**
+           * Set params token
+           * first conf object
+           * second sicret key
+           * thert time a live 1h 60sec * 60min
+           */
+          const token = jwt.sign({
+            userId: candidate._id,
+            nickname: candidate.nickname,
+            email: candidate.email,
+            role: candidate.role,
+            avatar: candidate.avatar,
+            signature: candidate.signature
+          }, process.env.JWT, {expiresIn: 60 * 60});
+
+          res.status(200).json({
+            token: `Bearer ${token}`,
+            status: 200
+          });
+        } else {
+          res.status(401).json({
+            msg: 'Почта или пароль не совпадают.',
+            status: 401
+          });
+        }
+      } else {
+        res.status(404).json({
+          msg: 'Вы не зарегистрированы.',
+          status: 404
+        });
+      }
+
+    } catch(e) {
+      errorHandler(res, e);
+    }
+  };
+
+}
+
+
+export const registration = Auth.prototype.registration;
+export const login = Auth.prototype.login;

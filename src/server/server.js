@@ -5,6 +5,7 @@ import logger from 'morgan';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import passport from 'passport';
+
 import dotenv from 'dotenv';
 import express from 'express';
 
@@ -22,20 +23,20 @@ import store from '../store';
 import { assetsByChunkName } from '../../dist/public/stats.json';
 
 // import indexRouter from './routes/index';
-// import authRouter from './routes/auth';
+import authRouter from './routes/auth';
 import articleRouter from './routes/article';
 // import fakerRouter from './routes/faker-create';
 import '@babel/polyfill';
 
 dotenv.config({
-  path: path.resolve(__dirname, 'src/server/.env'),
+  path: './src/server/.env',
 });
 
 mongoose.set('useCreateIndex', true);
 //mongoose.set('useUnifiedTopology', true);
 mongoose
     .connect(
-        'mongodb://admin:123456t@ds259253.mlab.com:59253/api', {
+        process.env.MONGO_URL, {
           useNewUrlParser: true,
         },
     )
@@ -46,8 +47,9 @@ mongoose
 
 const app = express();
 
-// app.use(passport.initialize());
-// require('./middleware/passport')(passport);
+app.use(passport.initialize());
+import passportMW from './middleware/passport';
+passportMW(passport);
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -59,7 +61,7 @@ app.use(express.static('dist'));
 
 
 // app.use('/', indexRouter);
-// app.use('/api/auth', authRouter);
+app.use('/api/auth', authRouter);
 app.use('/api/article', articleRouter);
 // app.use('/api/faker', fakerRouter);
 

@@ -8,10 +8,10 @@ const middleware = [thunk];
 let isClient = typeof window !== 'undefined';
 let isServer = typeof window === 'undefined';
 
-const composeEnhancers =
-  typeof window !== 'undefined'
-  ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
-  : compose;
+// const composeEnhancers =
+//   typeof window !== 'undefined'
+//   ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+//   : compose;
 
 let state;
 if (typeof window !== 'undefined') {
@@ -22,7 +22,7 @@ if (typeof window !== 'undefined') {
 const store = createStore(
   reducers,
   {},
-  composeEnhancers(applyMiddleware(...middleware)));
+  applyMiddleware(...middleware));
 
 if(isClient){
   window.store = store;

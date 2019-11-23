@@ -1,10 +1,10 @@
 import express from 'express';
 var router = express.Router();
 
-const controller = require('../controllers/auth');
+import { registration, login } from '../controllers/auth';
 
 /* GET users listing. */
-router.post('/registration', controller.registration);
-router.post('/login', controller.login);
+router.post('/registration', registration);
+router.post('/login', login);
 
 export default router;
